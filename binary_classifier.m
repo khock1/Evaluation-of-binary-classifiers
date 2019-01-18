@@ -6,14 +6,12 @@
 % GitHub for another application of similar evaluation concept on data
 % (c) Karlo Hock, University of Queensland, 2019
 
-
 % SETTING UP----------------------------------------------------------------
 
 n_measures = 200;% number of measurements in a sample
 n_predictions = 100;% number of times a sequence of measures representing predicted condition has been generated for evaluation
 x = datasample(0:1, n_measures);% 'true condition'
 y = zeros(n_predictions, n_measures);% container to store 'predicted conditions'
-
 
 % CREATE DUMMY DATA TO USE AS 'PREDICTED CONDITIONS'-----------------------------
 
@@ -43,7 +41,9 @@ classifier = struct('prediction',[],'confusion_matrix',[],'precision',[],'sensit
 for p = 1:n_predictions
     classifier(p).prediction = p;% record the number of samples
     confus_mat = zeros(2);% confusion matrix
-    for m = 1:n_measures% determine the match between true condition and predicted condition and build a confusion matrix out of that
+    
+    % determine the match between true condition and predicted condition and build a confusion matrix
+    for m = 1:n_measures
         this_x = x(1, m);
         this_y = y(p, m);
         if this_x == 1
@@ -60,6 +60,7 @@ for p = 1:n_predictions
             end
         end
     end
+    
     % extract the true and false positives and negatives for easier tracking
     true_positives = confus_mat(1, 1);
     false_positives = confus_mat(2, 1);% type I error
@@ -83,6 +84,7 @@ for p = 1:n_predictions
     classifier(p).false_neg_rate = false_negatives/(false_negatives+true_negatives);
     classifier(p).error = 1-classifier(p).accuracy;
     classifier(p).perm_chance = perm_chance(p);% store permutation chance for comparison; for large samples, should be close to error, ie. proportion of 'mislcassified' cases
+
 end
 
 % SIMPLE SUMMARY AND PLOTS TO EVALUATE PERFORMANCE--------------------------------
@@ -95,6 +97,7 @@ plot(xlim, [threshold threshold], 'r')% plot threshold value
 title('Accuracy performance', 'FontSize', 11);
 xlabel('Prediction Number');
 ylabel('Accuracy');
+
 % find all indices of predictions that perfomed above the threshold
 prediction_above_threshold = find([classifier.accuracy] >= threshold);
 % find the best perfoming prediction(s)
